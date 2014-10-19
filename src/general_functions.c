@@ -1,7 +1,34 @@
 #include "main.h"
 #include "general_functions.h"
 
-void handleAllInput(){
+/////////////
+//Variables//
+/////////////
+
+//Init Drive Motors
+Motor frontLeftWheel;
+Motor frontRightWheel;
+Motor backLeftWheel;
+Motor backRightWheel;
+
+//Init Lift Motors
+Motor topLeftLift;
+Motor middleLeftLift;
+Motor bottomLeftLift;
+Motor topRightLift;
+Motor middleRightLift;
+Motor bottomRightLift;
+
+//Init Controller Buttons
+JoyBtn liftUp;
+JoyBtn liftDown;
+
+JoyBtn forward_backward_drive;
+JoyBtn left_right_drive;
+JoyBtn forward_backward_strafe;
+JoyBtn left_right_strafe;
+
+void handleAllInput() {
 	handleDriveOrStrafing();
 	handleLiftInput();
 }
@@ -81,6 +108,10 @@ Motor createMotor(unsigned char port, bool reversed) {
 	motor.imeAddress = NULL;
 	return motor;
 }
+
+//Integrated motor encoders closest to the cortex in the chain get assigned an address of 0
+//encoders futher down the line get an address that is incremented down the line
+//so the next further one from the cortex would be 1 then 2 then 3 etc.
 Motor createMotorWithIME(unsigned char port, unsigned char imeAddress, bool reversed) {
 	Motor motor;
 	motor.port = port;
@@ -235,10 +266,49 @@ void handleStrafingInput() {
 
 //Decides whether to drive or strafe
 void handleDriveOrStrafing() {
-if (abs(readJoystick(forward_backward_drive)) <= DRIVE_THRESHOLD && abs(readJoystick(left_right_drive)) <= DRIVE_THRESHOLD) {
-			handleDriveInput();
-		}
-		else {
-			handleStrafingInput();
-		}
+	if (abs(readJoystick(forward_backward_drive)) <= DRIVE_THRESHOLD
+			&& abs(readJoystick(left_right_drive)) <= DRIVE_THRESHOLD) {
+		handleDriveInput();
+	} else {
+		handleStrafingInput();
 	}
+}
+
+/////////////////
+//Other Sensors//
+/////////////////
+
+//Init bumpers in initializeIO()
+Bumper bumperInit(unsigned char port) {
+	Bumper bumper;
+	bumper.port = port;
+	pinMode(bumper.port, INPUT);
+	return bumper;
+}
+
+// digitalRead() returns LOW if Pressed or HIGH if released
+// the function returns true if the bumper is pressed
+bool bumperPressed(Bumper bumper) {
+	if (digitalRead(bumper.port) == LOW) {
+		return true;
+	}
+	return false;
+}
+
+// Init limit switches in initializeIO()
+LimitSwitch limitSwitchInit(unsigned char port) {
+	LimitSwitch limitSwitch;
+	limitSwitch.port = port;
+	pinMode(limitSwitch.port, INPUT);
+	return limitSwitch;
+}
+
+// digitalRead() returns LOW if Pressed or HIGH if released
+// the function returns true if the bumper is pressed
+bool limitSwitchPressed(LimitSwitch limitSwitch) {
+	if (digitalRead(limitSwitch.port) == LOW) {
+		return true;
+	}
+	return false;
+}
+

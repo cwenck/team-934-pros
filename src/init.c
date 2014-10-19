@@ -62,29 +62,29 @@ void initializeIO() {
  */
 void initialize() {
 	//Init Drive Motors
-	Motor frontLeftWheel = createMotorWithIME(4, 0, false);
-	Motor frontRightWheel = createMotorWithIME(5, 1, false);
-	Motor backLeftWheel = createMotorWithIME(6, 2, false);
-	Motor backRightWheel = createMotorWithIME(7, 3, false);
+	frontLeftWheel = createMotorWithIME(4, 0, false);
+	frontRightWheel = createMotorWithIME(5, 1, false);
+	backLeftWheel = createMotorWithIME(6, 2, false);
+	backRightWheel = createMotorWithIME(7, 3, false);
 
 	//Init Lift Motors
-	Motor topLeftLift = createMotor(1, false);
-	Motor middleLeftLift = createMotor(2, false);
-	Motor bottomLeftLift = createMotor(3, false);
-	Motor topRightLift = createMotor(9, false);
-	Motor middleRightLift = createMotor(9, false);
-	Motor bottomRightLift = createMotor(10, false);
+	topLeftLift = createMotor(1, false);
+	middleLeftLift = createMotor(2, false);
+	bottomLeftLift = createMotor(3, false);
+	topRightLift = createMotor(9, false);
+	middleRightLift = createMotor(9, false);
+	bottomRightLift = createMotor(10, false);
 
 	//Init Controller Buttons
-	JoyBtn liftUp = createButton(5, JOY_UP);
-	JoyBtn liftDown = createButton(5, JOY_DOWN);
+	liftUp = createButton(5, JOY_UP);
+	liftDown = createButton(5, JOY_DOWN);
 
-	JoyBtn forward_backward_drive = createAxis(3);
-	JoyBtn left_right_drive = createAxis(4);
-	JoyBtn forward_backward_strafe = createAxis(2);
-	JoyBtn left_right_strafe = createAxis(1);
+	forward_backward_drive = createAxis(3);
+	left_right_drive = createAxis(4);
+	forward_backward_strafe = createAxis(2);
+	left_right_strafe = createAxis(1);
 
 	//Init Sensors
 	unsigned char connectedIntegratedMotorEncoders = imeInitializeAll();
-	printf("%i integrated motor encoders initialized", connectedIntegratedMotorEncoders);
+	printf("%u integrated motor encoders initialized", connectedIntegratedMotorEncoders);
 }

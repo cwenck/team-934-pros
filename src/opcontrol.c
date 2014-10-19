@@ -52,12 +52,20 @@
  *
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
+
+
+//Tasks using motors or joysticks should use delay(20) in the loop because they are only
+//updated by the cortex every 20ms
+
+//all other tasks should have at least delay(2ms) in any running loops to allow time for
+//other tasks to run
+
 void operatorControl() {
 	unsigned char connectedJoysticks = getNumConnectedJoysticks();
-
+	printf("%u joysticks were detected.", connectedJoysticks);
 
 	while (1) {
 		handleAllInput();
-		wait(5);
+		wait(20);
 	}
 }

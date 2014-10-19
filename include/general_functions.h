@@ -8,9 +8,12 @@
 #ifndef GENERAL_FUNCTIONS_H_
 #define GENERAL_FUNCTIONS_H_
 
-
-
 #endif /* GENERAL_FUNCTIONS_H_ */
+
+////////////
+void handleAllInput();
+///////////
+
 
 //////////
 //Motors//
@@ -22,6 +25,8 @@ typedef struct {
 } Motor;
 
 extern unsigned char connectedIntegratedMotorEncoders;
+
+void setMotorPower(Motor motor, int speed);
 
 Motor createMotor(unsigned char port, bool reversed);
 Motor createMotorWithIME(unsigned char port, unsigned char imeAddress, bool reversed);
@@ -42,18 +47,13 @@ extern Motor bottomRightLift;
 //Drive//
 /////////
 
-typedef enum{
-	same,
-	towards,
-	away
+typedef enum {
+	same, towards, away
 } WheelDirection;
 
-typedef enum{
-	left,
-	right,
-	forward,
-	backward
-}Direction;
+typedef enum {
+	left, right, forward, backward
+} Direction;
 
 extern const int DRIVE_THRESHOLD;
 
@@ -75,6 +75,9 @@ void handleDriveOrStrafing();
 extern const short liftHighPower;
 extern const short liftLowPower;
 
+void handleLiftInput();
+void setLiftPower(int speed);
+
 ////////////
 //Controls//
 ////////////
@@ -90,18 +93,35 @@ typedef struct {
 
 extern JoyBtn liftUp;
 extern JoyBtn liftDown;
+
 extern JoyBtn forward_backward_drive;
 extern JoyBtn left_right_drive;
 extern JoyBtn forward_backward_strafe;
 extern JoyBtn left_right_strafe;
 
-int readJoystick(JoyBtn btn);
+int readJoystick(JoyBtn button);
 
 JoyBtn createButton(unsigned char channel, unsigned char btn);
 JoyBtn createButtonOnPartnerJoystick(unsigned char channel, unsigned char btn);
 JoyBtn createAxis(unsigned char channel);
 JoyBtn createAxisOnPartnerJoystick(unsigned char channel);
 
-void setMotorPower(Motor m, int speed);
-void setLiftPower(int speed);
 unsigned char getNumConnectedJoysticks();
+
+/////////////////
+//Other Sensors//
+/////////////////
+
+typedef struct {
+	unsigned char port;
+} Bumper;
+
+typedef struct {
+	unsigned char port;
+} LimitSwitch;
+
+Bumper bumperInit(unsigned char port);
+bool bumperPressed(Bumper bumper);
+
+LimitSwitch limitSwitchInit(unsigned char port);
+bool limitSwitchPressed(LimitSwitch limitSwitch);
