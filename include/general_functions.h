@@ -31,6 +31,9 @@ void setMotorPower(Motor motor, int speed);
 Motor createMotor(unsigned char port, bool reversed);
 Motor createMotorWithIME(unsigned char port, unsigned char imeAddress, bool reversed);
 
+int readIME(Motor motor);
+void resetIME(Motor motor);
+
 extern Motor frontLeftWheel;
 extern Motor frontRightWheel;
 extern Motor backLeftWheel;
@@ -125,3 +128,33 @@ bool bumperPressed(Bumper bumper);
 
 LimitSwitch limitSwitchInit(unsigned char port);
 bool limitSwitchPressed(LimitSwitch limitSwitch);
+
+
+///////////////////
+//Other Utilities//
+///////////////////
+
+typedef struct{
+	TaskHandle pidTask;
+	float pConstant;
+	float iConstant;
+	float dConstant;
+	int targetValue;
+	int errorTolerance;
+	bool stopWhenTargetIsReached;
+	Motor sensor;
+	int sensorValue;
+	int error;
+	int lastError;
+	int integral;
+	float derivative;
+	unsigned long lastTime;
+	unsigned long currentTime;
+	float deltaSeconds;
+} PIDController;
+
+void initPIDControllerWithIME(float pConstant, float iConstant, float dConstant, Motor motor);
+void setPIDControllerIME(PIDController controller, Motor motor);
+void setPIDTarget(PIDController controller, int target);
+void startPID();
+void runPID(void *pidController);

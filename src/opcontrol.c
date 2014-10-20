@@ -65,7 +65,8 @@ void operatorControl() {
 	printf("%u joysticks were detected.", connectedJoysticks);
 
 	while (1) {
+		createAxis(3);
 		handleAllInput();
-		wait(20);
+		delay(20);
 	}
 }

@@ -28,10 +28,12 @@ JoyBtn left_right_drive;
 JoyBtn forward_backward_strafe;
 JoyBtn left_right_strafe;
 
+//////////////////////////////
 void handleAllInput() {
 	handleDriveOrStrafing();
 	handleLiftInput();
 }
+//////////////////////////////
 
 ////////////
 //Joystick//
@@ -61,6 +63,14 @@ JoyBtn createAxis(unsigned char channel) {
 	return button;
 }
 
+JoyBtn createAxisOnPartnerJoystick(unsigned char channel) {
+	JoyBtn button;
+	button.channel = channel;
+	button.btn = NULL;
+	button.onPartnerJoystick = true;
+	return button;
+}
+
 unsigned char getNumConnectedJoysticks() {
 	unsigned char joysticksConnected = 0;
 	if (isJoystickConnected(1)) {
@@ -79,7 +89,7 @@ int readJoystick(JoyBtn button) {
 	if (button.onPartnerJoystick) {
 		joy = 2;
 	}
-	if (button.channel == 1 || button.channel == 2 || button.channel == 3 || button.channel == 4) {
+	if ((button.channel == 1 || button.channel == 2) || (button.channel == 3 || button.channel == 4)) {
 		return joystickGetAnalog(joy, button.channel);
 	} else {
 		if (joystickGetDigital(joy, button.channel, button.btn)) {
@@ -118,6 +128,16 @@ Motor createMotorWithIME(unsigned char port, unsigned char imeAddress, bool reve
 	motor.reversed = reversed;
 	motor.imeAddress = imeAddress;
 	return motor;
+}
+
+int readIME(Motor motor) {
+	int encoderCounts;
+	imeGet(motor.imeAddress, &encoderCounts);
+	return encoderCounts;
+}
+
+void resetIME(Motor motor) {
+	imeReset(motor.imeAddress);
 }
 
 ////////
@@ -312,3 +332,56 @@ bool limitSwitchPressed(LimitSwitch limitSwitch) {
 	return false;
 }
 
+////////////////////////////
+//PID Controller Functions//
+////////////////////////////
+
+void initPIDControllerWithIME(float pConstant, float iConstant, float dConstant, Motor motor) {
+	PIDController controller;
+	controller.pConstant = pConstant;
+	controller.iConstant = iConstant;
+	controller.dConstant = dConstant;
+	controller.sensor = motor;
+}
+
+void setPIDControllerIME(PIDController controller, Motor motor) {
+	controller.sensor = motor;
+}
+
+void setPIDTarget(PIDController controller, int target) {
+	controller.targetValue = target;
+}
+
+void startPID(PIDController controller) {
+	controller.pidTask = taskCreate(runPID, TASK_DEFAULT_STACK_SIZE, (void *) &controller,
+			TASK_PRIORITY_DEFAULT);
+}
+
+void runPID(void *pidController) {
+	PIDController controller = *((PIDController *) pidController);
+	while (1) {
+		controller.lastTime = controller.currentTime;
+		controller.lastError = controller.error;
+
+		controller.currentTime = millis();
+		controller.deltaSeconds = ((float) (controller.currentTime - controller.lastTime)) / 1000;
+
+		controller.sensorValue = readIME(controller.sensor);
+		controller.error = controller.targetValue - controller.sensorValue;
+
+		controller.integral += controller.error * controller.deltaSeconds;
+
+		if (abs(controller.error) > controller.errorTolerance) {
+			controller.integral = 0;
+		}
+
+		controller.derivative = ((float) (controller.error - controller.lastError))
+				/ controller.deltaSeconds;
+
+		int speed = (int)(controller.pConstant * controller.error);
+
+//		setLeftMotorSpeed()
+
+		delay(20);
+	}
+}

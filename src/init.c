@@ -62,10 +62,10 @@ void initializeIO() {
  */
 void initialize() {
 	//Init Drive Motors
-	frontLeftWheel = createMotorWithIME(4, 0, false);
-	frontRightWheel = createMotorWithIME(5, 1, false);
-	backLeftWheel = createMotorWithIME(6, 2, false);
-	backRightWheel = createMotorWithIME(7, 3, false);
+	frontLeftWheel = createMotorWithIME(4, 1, false);
+	backLeftWheel = createMotorWithIME(6, 0, false);
+	frontRightWheel = createMotorWithIME(5, 3, false);
+	backRightWheel = createMotorWithIME(7, 2, false);
 
 	//Init Lift Motors
 	topLeftLift = createMotor(1, false);
